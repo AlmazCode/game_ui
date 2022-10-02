@@ -1,6 +1,4 @@
-from lzma import MF_BT3
 import pygame
-import pygame.gfxdraw
 
 pygame.init()
 
