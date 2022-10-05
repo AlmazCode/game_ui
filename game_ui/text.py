@@ -11,10 +11,13 @@ class Text:
         self.width, self.height = 300, 300   # размер text - (ширина, высота)
 
         self.surface = surface   # окно на котором будет рисоваться кнопка
-        self.renderSurface = pygame.Surface((self.width, self.height))   # второе окно к котором будет содержимое
-        
+        self.renderSurface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)   # второе окно к котором будет содержимое
+
+
         self.color = (150, 150, 150)   # цвет фона
         self.textColor = (255, 255, 255)   # цвет текста
+
+        self.cursorColor = (0, 150, 255)   # цвет курсора
 
         self.oldMousePos = (0, 0)   # старое положение мышки по Y [нужно для скролла]
         self.lastY = 0   # последнее положение текста по Y [нужно для отрисовки текста]
@@ -70,6 +73,9 @@ class Text:
             elif arg == 'font':
                 self.fontPath = args[arg]
             
+            elif arg == 'cursorColor':
+                self.cursorColor = args[arg]
+
             else:
                 print(f'GameUI_Error: "{arg}" is not defined')
 
@@ -107,7 +113,7 @@ class Text:
                 self.text += '\n'
 
                 if self.lastY + self.textPos + self.fontSize // 1.5 > self.rect.height:
-                    self.textPos -= self.fontSize // 1.5
+                    self.textPos -= self.fontSize * 2
             
             # удаление последнего символа в тексе
             elif keys[pygame.K_BACKSPACE] and self.mode == 1 and self.text != '':
@@ -138,6 +144,8 @@ class Text:
                 else:
                     self.time += 1
                     if self.time >= self.StartTime: self.direct = -1
+            
+            if self.rect.width != self.width or self.rect.height != self.height: self.rect.width = self.width; self.rect.height = self.height
 
             mBT = pygame.mouse.get_pressed()
             mx, my = pygame.mouse.get_pos()
@@ -162,14 +170,12 @@ class Text:
     
     def draw(self):
 
-        # подстраивание второго окна и текста под размеры text
-        if self.mode == 1 and self.renderSurface.get_width() != self.rect.width or self.renderSurface.get_height() != self.rect.height:
-            self.renderSurface = pygame.Surface((self.rect.width, self.rect.height))
-            self.text = self.text.replace('\n', '')
-
-        self.renderSurface.fill(self.color)
+        self.renderSurface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self.renderSurface.fill((0, 0, 0, 0))
+        pygame.draw.rect(self.renderSurface, self.color, (0, 0, self.rect.width, self.rect.height))
 
         if self.mode == 1:
+
             # подстраивание текста
             while 1:
                 get = self.text.split('\n')
@@ -180,7 +186,7 @@ class Text:
                     self.text = self.text[0:-1] + '\n' + self.text[-1]
 
                     if self.lastY + self.textPos > self.rect.height:
-                        self.textPos -= self.fontSize // 1.5
+                        self.textPos -= self.fontSize * 2
 
                     break
                 break
@@ -195,13 +201,13 @@ class Text:
             tx = self.font.render(obj, 1, self.textColor)
             self.renderSurface.blit(tx, (10, y + self.textPos))
 
-            y += self.fontSize // 1.3
+            y += self.fontSize // 1.1
         
         self.lastY = y
         
         # отрисовка курсора
-        if self.mode == 1 and self.direct == -1:
-            pygame.draw.rect(self.renderSurface, (0, 150, 255), (10 + tx.get_width() + 5, (y - self.fontSize // 1.3) + self.textPos, self.fontSize // 10, self.fontSize // 1.3))
+        if self.mode == 1 and self.direct == -1 and self.eding:
+            pygame.draw.rect(self.renderSurface, self.cursorColor, (10 + tx.get_width() + 5, (y - self.fontSize) + self.textPos, self.fontSize // 10, self.fontSize // 1.1))
         
         # отрисовка всего text
         self.surface.blit(self.renderSurface, (self.rect.x, self.rect.y))

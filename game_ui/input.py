@@ -16,6 +16,8 @@ class Input:
         self.color = (150, 150, 150)   # цвет input
         self.pressedColor = (100, 100, 100)   # цвет input когда она будет нажата
 
+        self.cursorColor = (0, 150, 255)   # цвет курсора
+
         self.fontSize = 30   # размер шрифта
         self.fontPath = None   # путь до шрфита, если == None, будет использоваться стандартый
 
@@ -43,6 +45,7 @@ class Input:
         self.mode = 0   # режим отрисовки текста
         self.render = True   # переменная, отвечающая за отрисовку input на экране, если == True, то input будет рисоваться, иначе нет.
         self.borderRadius = -1   # уровень сглаживания углов у кнопки, если == -1, то сглаживание не будет
+        self.fillSize = 0   # уровень заливки кнопки, если == 0, то будет заливаться полностью
 
         self.surface = surface   # окно на котором будет рисоваться кнопка
 
@@ -81,6 +84,11 @@ class Input:
             
             elif arg == 'borderRadius':
                 self.borderRadius = args[arg]
+            elif arg == 'fillSize':
+                self.fillSize = args[arg]
+            
+            elif arg == 'cursorColor':
+                self.cursorColor = args[arg]
             
             else:
                 print(f'GameUI_Error: "{arg}" is not defined')
@@ -171,9 +179,9 @@ class Input:
 
         # отрисовка кнопки от зависимости переменной [mode]
         if self.mode == 0:
-            pygame.draw.rect(self.surface, self.color, self.rect, 0, self.borderRadius)
+            pygame.draw.rect(self.surface, self.color, self.rect, self.fillSize, self.borderRadius)
         elif self.mode == 1:
-            pygame.draw.rect(self.surface, self.pressedColor, self.rect, 0, self.borderRadius)
+            pygame.draw.rect(self.surface, self.pressedColor, self.rect, self.fillSize, self.borderRadius)
         
         # если текст в input пустой
         if self.text == '':
@@ -192,7 +200,7 @@ class Input:
             rect = pygame.Rect(Text.get_width(), 0, 0, 0)
 
             # отрисовка курсора
-            if self.mode == 1 and self.direct == -1 and rect.x + 20 < self.rect.width:
-                pygame.draw.rect(self.surface, (0, 150, 255), (self.rect.x + Text.get_width() + 10, self.rect.centery - self.fontSize // 2, self.fontSize // 8, self.fontSize))
+            if self.mode == 1 and self.direct == -1 and self.eding and rect.x + 20 < self.rect.width:
+                pygame.draw.rect(self.surface, self.cursorColor, (self.rect.x + Text.get_width() + 10, self.rect.centery - self.fontSize // 2, self.fontSize // 8, self.fontSize))
 
 inputs = []

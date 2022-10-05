@@ -35,7 +35,8 @@ class Button:
         self.press = False
         self.render = True  # переменная, отвечающая за отрисовку кнопки на экране, если == True, то кнопка будет рисоваться, иначе нет.
         self.borderRadius = -1  # уровень сглаживания углов у кнопки, если == -1, то сглаживание не будет
-        
+        self.fillSize = 0   # уровень заливки кнопки, если == 0, то будет заливаться полностью
+
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         for arg in args:
@@ -74,6 +75,8 @@ class Button:
             
             elif arg == 'borderRadius':
                 self.borderRadius = args[arg]
+            elif arg == 'fillSize':
+                self.fillSize = args[arg]
             
             elif arg == 'image':
                 if args[arg] != None:
@@ -192,11 +195,11 @@ class Button:
         if self.image == None:
             # отрисовка кнопки от зависимости переменной [mode]
             if self.mode == 0:
-                pygame.draw.rect(self.surface, self.color, self.rect, 0, self.borderRadius)
+                pygame.draw.rect(self.surface, self.color, self.rect, self.fillSize, self.borderRadius)
             elif self.mode == 1:
-                pygame.draw.rect(self.surface, self.pressedColor, self.rect, 0, self.borderRadius)
+                pygame.draw.rect(self.surface, self.pressedColor, self.rect, self.fillSize, self.borderRadius)
             elif self.mode == 2:
-                pygame.draw.rect(self.surface, self.selectedColor, self.rect, 0, self.borderRadius)
+                pygame.draw.rect(self.surface, self.selectedColor, self.rect, self.fillSize, self.borderRadius)
             
             # отрисовка текста кнопки
             if self.text != '':
